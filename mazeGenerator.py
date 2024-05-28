@@ -4,7 +4,6 @@ adiacency_list = {}
 
 visited = set()
 stack = []
-
 links = {}
 
 def generate_adiacency_list(height, width):
@@ -43,6 +42,7 @@ def generate_maze():
             for point in adiacency_list[current_point]
             if point not in visited and point not in stack
         ]
+
 
         number_of_neighbors_to_visit = 0
 
