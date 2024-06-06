@@ -1,8 +1,6 @@
-import svglib
-import svg2json
 from xml.dom import minidom
-import numpy as np
-from svg.path import parse_path
+import coordSystemMod as cm
+
 def apply_transformation(mat, point):
     x_nou = mat[0]*point[0] + mat[2]*point[1] + mat[4]
     y_nou = mat[1]*point[0] + mat[3]*point[1] + mat[5]
@@ -36,13 +34,14 @@ line_list=[]
 for i in range(len(path_dict)):
     line=[]
     if path_trans[i] != '':
-        line.append(apply_transformation(path_trans[i], [path_dict[i][0], path_dict[i][1]]))
-        line.append(apply_transformation(path_trans[i], [path_dict[i][2], path_dict[i][3]]))
+        line.append(cm.change4to1(apply_transformation(path_trans[i], [path_dict[i][0], path_dict[i][1]])))
+        line.append(cm.change4to1(apply_transformation(path_trans[i], [path_dict[i][2], path_dict[i][3]])))
     else:
-        line.append((path_dict[i][0], path_dict[i][1]))
-        line.append((path_dict[i][2], path_dict[i][3]))
+        line.append(cm.change4to1(path_dict[i][0], path_dict[i][1]))
+        line.append(cm.change4to1(path_dict[i][2], path_dict[i][3]))
     line_list.append(line)
 
+line_list
 
 
 

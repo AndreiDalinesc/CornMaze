@@ -1,13 +1,5 @@
-import simplekml
-from pykml import parser
-import geojson
-import subprocess
 import geopandas as gpd
-from shapely.geometry import Point, Polygon
-import pandas as pd
 import folium
-import kml2geojson
-
 
 kmlFile = "input\\RegularShap.kml"
 geoFile = "input\\geoFile.json"

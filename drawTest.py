@@ -2,8 +2,6 @@ import turtle as tt
 import tkinter as tk
 import svgReader as r
 
-a=1
-
 def drawLine(canva,p1,p2):
     canva.penup()
     canva.goto((p1[0],p1[1]))
