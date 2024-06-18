@@ -9,7 +9,6 @@ def apply_transformation(mat, point):
 
 #import image from svg
 svgFile = "input\\simpleSVG.svg"
-
 svg_dom = minidom.parseString(open(svgFile,'rb').read())
 
 #extract xml's attributes from svg

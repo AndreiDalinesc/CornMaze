@@ -13,12 +13,10 @@ gdf = gpd.read_file(kmlFile, driver='KML')
 geoString = gdf.to_json()
 geoJSON = json.loads(geoString)
 
-# # make a list with vertex of polygon
-
-# Accesează coordonatele poligonului
+#Get the polygon vertex
 coordinates = geoJSON["features"][0]["geometry"]["coordinates"][0]
 
-# Afișează coordonatele
+#Show polygon coordonates
 for point in coordinates:
      print(point)
 
@@ -26,12 +24,12 @@ for point in coordinates:
 # write a GeoJSON with SVG point
 new_shape = gc.construct_GeoJSON_Polygon(rd.limit_point)
 
-
-# add point in Folium
+# create the map
 map = folium.Map()
 
+#add point on the map
 folium.GeoJson(geoJSON).add_to(map)
-
 # folium.GeoJson(new_shape).add_to(map)
 
-#map.show_in_browser()
+#show map in the browser
+map.show_in_browser()

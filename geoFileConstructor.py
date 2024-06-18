@@ -1,5 +1,6 @@
 import json
 
+#make a GeoJSON structure for polygons
 def construct_GeoJSON_Polygon(listPoint):
 
     if listPoint[0] != listPoint[-1]:
