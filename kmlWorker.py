@@ -41,11 +41,8 @@ map_diff = [map_xmax - map_xmin, map_ymax - map_ymin, map_xmin, map_ymin]
 
 #change system parameters
 sx, sy, tx, ty = cm.changeParameters(map_diff,rd.img_diff)
-print(sx, sy, tx, ty)
-#test = r.choice(coordinates)
-test = [21.15736485981648, 45.3956439517378]
-print("test",test)
 
+#trasform SVG coordonates for limits point in GPS coordoantes
 list = [ ]
 for i in rd.limit_point:
      list1 = []
@@ -53,24 +50,24 @@ for i in rd.limit_point:
      list1.append(i[1] * sy + ty)
      list.append(list1)
 
+#trasform SVG coordonates for route point in GPS coordoantes
+gps_dict = dict()
 
-print("list", list)
-print("poly", coordinates)
+for i in rd.adj_list.keys():
+    i_key = (i[0] * sx + tx,i[1] * sy + ty)
+    gps_dict[i_key] = []
+    for j in rd.adj_list[i]:
+        gps_dict[i_key].append([j[0] * sx + tx, j[1] * sy + ty])
 
 polya = Polygon(coordinates)
 polyb = Polygon(list)
 
-print(polya.contains(polyb))
-
-#Show polygon coordonates
-# for point in coordinates:
-#      print(point)
-
-
 # write a GeoJSON with SVG point
-#rd.limit_point = cm.resiveSvg(rd.limit_point,0.7)
-
 new_shape = gc.construct_GeoJSON_Polygon(list)
+
+pointFeatures = []
+for i in gps_dict.keys():
+    pointFeatures.append(gc.construct_GeoJSON_Point(i))
 
 # create the map
 map = folium.Map()
@@ -78,6 +75,14 @@ map = folium.Map()
 #add point on the map
 folium.GeoJson(geoJSON).add_to(map)
 folium.GeoJson(new_shape).add_to(map)
+
+visited = []
+for i in gps_dict.keys():
+    folium.Marker(location=i).add_to(map)
+    for j in gps_dict[i]:
+        if j not in visited:
+            folium.PolyLine(locations=[i,j],color='red').add_to(map)
+    visited.append(i)
 
 #show map in the browser
 map.show_in_browser()
