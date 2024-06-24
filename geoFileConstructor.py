@@ -16,3 +16,15 @@ def construct_GeoJSON_Polygon(listPoint):
         }
     }
     return json.dumps(geojson, indent=4)
+
+def construct_GeoJSON_Point(Point):
+    geojson = {
+        "type": "Feature",
+        "geometry": {
+            "type": "Point",
+            "coordinates": [Point]
+        },
+        "properties": {
+        }
+    }
+    return json.dumps(geojson, indent=4)
