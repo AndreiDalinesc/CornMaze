@@ -1,7 +1,32 @@
 from xml.dom import minidom
 import coordSystemMod as cm
 
+def changePoint(lists,point,value):
+    for i in range(len(lists)):
+        for j in range(len(lists[i])):
+            if lists[i][j] == point:
+                lists[i][j] = value
+def syncPoint(lists):
+    error = 5
+    allPoint = []
+    for i in lists:
+        for j in i:
+            allPoint.append(j)
+    value = [ ]
+    for i in range(len(allPoint)-1):
+       if i not in value:
+           for j in range(i+1,len(allPoint)):
+               errorX=allPoint[i][0]-allPoint[j][0]
+               errorY=allPoint[i][1]-allPoint[j][1]
+               if abs(errorX)<error and errorY==0:
+                   changePoint(lists,allPoint[j],allPoint[i])
+               elif abs(errorY)<error and errorX==0:
+                   changePoint(lists,allPoint[j],allPoint[i])
+               elif abs(errorX)<error and abs(errorY)<error and errorX>0 and errorY>0:
+                   changePoint(lists,allPoint[j],allPoint[i])
+       value.append(i)
 
+    return allPoint
 
 #import image from svg
 svgFile = "input\\simpleSVG.svg"
@@ -21,7 +46,7 @@ for i in path_transformation:
     else:
         path_trans.append(i)
 
-#change in int the value of coordonates
+#change in float the value of coordonates
 path_dict = []
 for path in path_strings:
     parsed = path.split()
@@ -45,11 +70,9 @@ for i in range(len(path_dict)):
         # line.append(cm.change4to1(path_dict[i][0], path_dict[i][1]))
         # line.append(cm.change4to1(path_dict[i][2], path_dict[i][3]))
     line_list.append(line)
-print(line_list)
 
 img_xmax = img_xmin = int(line_list[0][0][0])
 img_ymax = img_ymin = int(line_list[0][0][1])
-
 
 #edit point for connecting lines
 for i in range(len(line_list)):
@@ -64,10 +87,10 @@ for i in range(len(line_list)):
             img_ymin = int(line_list[i][j][1])
         line_list[i][j] = [int(line_list[i][j][0]), int(line_list[i][j][1])]
 
-print(line_list)
-print()
-for i in line_list:
+#synchronizing the points of vectors
+syncPoint(line_list)
 
+for i in line_list:
     print(i)
 print(img_xmax,img_ymax, img_xmin,  img_ymin)
 
