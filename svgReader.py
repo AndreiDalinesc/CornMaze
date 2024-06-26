@@ -17,6 +17,7 @@ def changePoint(lists,point,value):
         for j in range(len(lists[i])):
             if lists[i][j] == point:
                 lists[i][j] = value
+
 def syncPoint(lists):
     error = 5
     allPoint = []
@@ -33,15 +34,65 @@ def syncPoint(lists):
                    changePoint(lists,allPoint[j],allPoint[i])
                elif abs(errorY)<error and errorX==0:
                    changePoint(lists,allPoint[j],allPoint[i])
-               elif abs(errorX)<error and abs(errorY)<error and errorX>0 and errorY>0:
+               elif (abs(errorX)<error and abs(errorY)<error and errorX>0 and errorY>0):
                    changePoint(lists,allPoint[j],allPoint[i])
        value.append(i)
 
     return allPoint
 
+def makeAdjList(pointList):
+    dicts = dict()
+    for i in range(len(pointList)):
+        if tuple(pointList[i][0]) not in dicts.keys():
+            dicts[tuple(pointList[i][0])] = list()
+            dicts[tuple(pointList[i][0])].append(pointList[i][1])
+            if tuple(pointList[i][1]) not in dicts.keys():
+                dicts[tuple(pointList[i][1])] = list()
+                dicts[tuple(pointList[i][1])].append(pointList[i][0])
+            else:
+                dicts[tuple(pointList[i][1])].append(pointList[i][0])
+        else:
+            dicts[tuple(pointList[i][0])].append(pointList[i][1])
+            if tuple(pointList[i][1]) not in dicts.keys():
+                dicts[tuple(pointList[i][1])] = list()
+                dicts[tuple(pointList[i][1])].append(pointList[i][0])
+    return dicts
+
+def extremIsIntersection(dicts):
+    for i in dicts.keys():
+        for j in dicts[i]:
+            for k in dicts.keys():
+                if k != i and k != tuple(j):
+                    if cm.isOnTheLine(i, tuple(j), k):
+                        dicts[i].append(list(k))
+                        dicts[i].remove(j)
+                        dicts[tuple(j)].append(list(k))
+                        dicts[tuple(j)].remove(list(i))
+                        dicts[k].append(list(i))
+                        dicts[k].append(list(j))
+
+def isALinesIntersection(dicts,lineList):
+    for i in range(len(lineList) - 1):
+        for j in range(i + 1, len(lineList)):
+            coef_i = cm.coefficientsOfLine(lineList[i][0], lineList[i][1])
+            coef_j = cm.coefficientsOfLine(lineList[j][0], lineList[j][1])
+            intersection = cm.intersectionOfLines(coef_i,coef_j)
+            if intersection != None and cm.onTheSegment(intersection, lineList[i][0],
+                                                        lineList[i][1]) and cm.onTheSegment(intersection,
+                                                                                             lineList[j][0],
+                                                                                             lineList[j][1]):
+                if tuple(intersection) not in dicts.keys():
+                    dicts[tuple(intersection)] = list()
+                if lineList[i][0] in dicts[tuple(lineList[i][1])] and lineList[i][1] in adj_list[
+                    tuple(lineList[i][0])]:
+                    addLinkd(dicts, lineList[i], intersection)
+                if lineList[j][0] in dicts[tuple(lineList[j][1])] and lineList[j][1] in adj_list[
+                    tuple(lineList[j][0])]:
+                    addLinkd(dicts, lineList[j], intersection)
+
 #import image from svg
-svgFile = "input\\simpleSVG.svg"
-#svgFile = "input\\simpleSVG2.svg"
+#svgFile = "input\\simpleSVG.svg"
+svgFile = "input\\simpleSVG2.svg"
 svg_dom = minidom.parseString(open(svgFile,'rb').read())
 
 #extract xml's attributes from svg
@@ -80,7 +131,7 @@ for i in range(len(path_dict)):
 img_xmax = img_xmin = int(line_list[0][0][0])
 img_ymax = img_ymin = int(line_list[0][0][1])
 
-#edit point for connecting lines
+#calculating the min and max points of system
 for i in range(len(line_list)):
     for j in range(2):
         if line_list[i][j][0] > img_xmax:
@@ -99,46 +150,13 @@ limits = {str(img_xmax):[], str(img_xmin):[], str(img_ymax):[], str(img_ymin):[]
 syncPoint(line_list)
 
 #generating an adjacency list for an unoriented graph
-adj_list = dict()
-for i in range(len(line_list)):
-    if tuple(line_list[i][0]) not in adj_list.keys():
-        adj_list[tuple(line_list[i][0])] = list()
-        adj_list[tuple(line_list[i][0])].append(line_list[i][1])
-        if tuple(line_list[i][1]) not in adj_list.keys():
-            adj_list[tuple(line_list[i][1])] = list()
-            adj_list[tuple(line_list[i][1])].append(line_list[i][0])
-        else:
-            adj_list[tuple(line_list[i][1])].append(line_list[i][0])
-    else:
-        adj_list[tuple(line_list[i][0])].append(line_list[i][1])
-        if tuple(line_list[i][1]) not in adj_list.keys():
-            adj_list[tuple(line_list[i][1])] = list()
-            adj_list[tuple(line_list[i][1])].append(line_list[i][0])
+adj_list = makeAdjList(line_list)
 
 #completing the adjacency list with the intersections which is on the lines
-for i in adj_list.keys():
-    for j in adj_list[i]:
-        for k in adj_list.keys():
-            if k!=i and k!=tuple(j) :
-                if cm.isOnTheLine(i,tuple(j),k):
-                    adj_list[i].append(list(k))
-                    adj_list[i].remove(j)
-                    adj_list[tuple(j)].append(list(k))
-                    adj_list[tuple(j)].remove(list(i))
-                    adj_list[k].append(list(i))
-                    adj_list[k].append(list(j))
+extremIsIntersection(adj_list)
 
 #completing the adjacency list with the intersections which is the intersections on lines
-for i in range(len(line_list)-1):
-    for j in range(i+1,len(line_list)):
-        intersection = cm.intersectionOfLines(cm.coefficientsOfLine(line_list[i][0],line_list[i][1]),cm.coefficientsOfLine(line_list[j][0],line_list[j][1]))
-        if intersection != None and cm.onTheSegment(intersection,line_list[i][0],line_list[i][1]) and cm.onTheSegment(intersection,line_list[j][0],line_list[j][1]):
-            if tuple(intersection) not in adj_list.keys():
-                adj_list[tuple(intersection)] = list()
-            if line_list[i][0] in adj_list[tuple(line_list[i][1])] and line_list[i][1] in adj_list[tuple(line_list[i][0])]:
-                addLinkd(adj_list, line_list[i], intersection)
-            if line_list[j][0] in adj_list[tuple(line_list[j][1])] and line_list[j][1] in adj_list[tuple(line_list[j][0])]:
-                addLinkd(adj_list, line_list[j], intersection)
+isALinesIntersection(adj_list,line_list)
 
 #get the limit of the maze
 
@@ -166,7 +184,6 @@ for i in adj_list.keys():
 limit_point = []
 for i in limits.keys():
     limit_point.append(limits[i][0])
-
 
 #using for change the system coordonates
 img_diff = [img_xmax-img_xmin, img_ymax-img_ymin, img_xmin, img_ymin]
