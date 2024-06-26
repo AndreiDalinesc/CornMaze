@@ -25,12 +25,14 @@ def changeParameters(map_diff, img_diff):
     ty = map_diff[3] - sy * img_diff[3]
 
     return sx, sy, tx, ty
+def onTheSegment(point, p1, p2):
+    return min(p1[0], p2[0]) <= point[0] <= max(p1[0], p2[0]) and min(p1[1], p2[1]) <= point[1] <= max(p1[1], p2[1])
 
 def isOnTheLine(p1,p2,p):
-    if p1[0]==p2[0] and p1[0]==p[0] and ((p1[1]<p[1] and p2[1]>p[1]) or (p1[1]>p[1] and p2[1]<p[1])):
+    if p1[0]==p2[0] and p1[0]==p[0] and onTheSegment(p,p1,p2):
         #is verticla and is between the p1 and p2
         return True
-    elif p1[1]==p2[1] and p1[1]==p[1] and ((p1[0]<p[0] and p2[0]>p[0]) or (p1[0]>p[0] and p2[0]<p[0])):
+    elif p1[1]==p2[1] and p1[1]==p[1] and onTheSegment(p,p1,p2):
         # is horizontal and is between the p1 and p2
         return True
     else:
@@ -43,7 +45,7 @@ def isOnTheLine(p1,p2,p):
 
 def coefficientsOfLine(p1, p2):
     # calculate the coefficients of the line equation from two points
-    a = p2[0] - p1[0]
+    a = p1[0] - p2[0]
     b = p2[1] - p1[1]
     c = p2[1] * p1[0] - p2[0] * p1[1]
 
@@ -58,7 +60,7 @@ def intersectionOfLines(coef1, coef2):
         return None  # the line is paralel or is the same
 
     # calculate the intersection point with Cramer's equation
-    y = -(coef1[2] * coef2[1] - coef2[2] * coef1[1]) / D
+    y = (coef1[2] * coef2[1] - coef2[2] * coef1[1]) / D
     x = (coef1[0] * coef2[2] - coef2[0] * coef1[2]) / D
 
     return [x, y]
@@ -69,8 +71,7 @@ def distanceBetweenPoints(p1, p2):
 def absPoint(p1):
     return [abs(p1[0]), abs(p1[1])]
 
-def onTheSegment(point, p1, p2):
-    return min(p1[0], p2[0]) <= point[0] <= max(p1[0], p2[0]) and min(p1[1], p2[1]) <= point[1] <= max(p1[1], p2[1])
+
 
 def scale_point(px, py, cx, cy, scale_factor):
     return cx + scale_factor * (px - cx), cy + scale_factor * (py - cy)

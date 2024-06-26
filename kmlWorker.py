@@ -104,12 +104,6 @@ for i in gps_dict.keys():
     for j in gps_dict[i]:
         new_gps_dict[tuple(transformed_dict[i])].append(transformed_dict[tuple(j)])
 
-for i in new_gps_dict.keys():
-    for j in new_gps_dict[i]:
-        print(i,":",j)
-
-
-
 # write a GeoJSON with SVG point
 new_shape = gc.construct_GeoJSON_Polygon(list)
 
@@ -119,7 +113,6 @@ map = folium.Map(location=[map_ymin,map_xmin], zoom_start=15)
 #add point on the map
 folium.GeoJson(geoJSON).add_to(map)
 #folium.GeoJson(new_shape).add_to(map)
-
 
 visited = []
 for i in new_gps_dict.keys():
