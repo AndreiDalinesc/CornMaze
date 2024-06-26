@@ -28,3 +28,15 @@ def construct_GeoJSON_Point(Point):
         }
     }
     return json.dumps(geojson, indent=4)
+
+def construct_GeoJSON_LineString(p1,p2):
+    geojson = {
+        "type": "Feature",
+        "geometry": {
+            "type": "LineString",
+            "coordinates": [p1, p2]
+        },
+        "properties": {
+        }
+    }
+    return json.dumps(geojson, indent=4)
