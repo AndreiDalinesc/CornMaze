@@ -71,3 +71,6 @@ def absPoint(p1):
 
 def onTheSegment(point, p1, p2):
     return min(p1[0], p2[0]) <= point[0] <= max(p1[0], p2[0]) and min(p1[1], p2[1]) <= point[1] <= max(p1[1], p2[1])
+
+def scale_point(px, py, cx, cy, scale_factor):
+    return cx + scale_factor * (px - cx), cy + scale_factor * (py - cy)

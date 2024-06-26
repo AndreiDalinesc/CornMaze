@@ -65,7 +65,6 @@ for path in path_strings:
     parsed.pop(2)
     path_dict.append([float(x) for x in parsed])
 
-
 #apply the matrix transformations on the points
 line_list=[]
 for i in range(len(path_dict)):
@@ -94,22 +93,10 @@ for i in range(len(line_list)):
             img_ymin = int(line_list[i][j][1])
         line_list[i][j] = [int(line_list[i][j][0]), int(line_list[i][j][1])]
 
+limits = {str(img_xmax):[], str(img_xmin):[], str(img_ymax):[], str(img_ymin):[]}
+
 #synchronizing the points of vectors
 syncPoint(line_list)
-
-#get the limits of the maze
-xmin = img_xmin - img_xmin
-ymax = img_ymax - img_ymin
-xmax = img_xmax - img_xmin
-ymin = img_ymin - img_ymin
-
-limit_point = [[xmin,ymin],[xmin,ymax],[xmax,ymax],[xmax,ymin]]
-
-for i in range(len(limit_point)):
-    limit_point[i] = [limit_point[i][0], limit_point[i][1]]
-
-#using for change the system coordonates
-img_diff = [img_xmax-img_xmin, img_ymax-img_ymin, img_xmin, img_ymin]
 
 #generating an adjacency list for an unoriented graph
 adj_list = dict()
@@ -127,7 +114,6 @@ for i in range(len(line_list)):
         if tuple(line_list[i][1]) not in adj_list.keys():
             adj_list[tuple(line_list[i][1])] = list()
             adj_list[tuple(line_list[i][1])].append(line_list[i][0])
-
 
 #completing the adjacency list with the intersections which is on the lines
 for i in adj_list.keys():
@@ -153,3 +139,34 @@ for i in range(len(line_list)-1):
                 addLinkd(adj_list, line_list[i], intersection)
             if line_list[j][0] in adj_list[tuple(line_list[j][1])] and line_list[j][1] in adj_list[tuple(line_list[j][0])]:
                 addLinkd(adj_list, line_list[j], intersection)
+
+#get the limit of the maze
+
+for i in adj_list.keys():
+    for j in limits.keys():
+        if i[0]==int(j) or i[1]==int(j):
+            limits[j].append(i)
+
+# for i in limits.keys():
+#     if len(limits[i])>1:
+#         x=0
+#         y=0
+#         for j in limits[i]:
+#             x = x + limits[i][j][0]
+#             y = y + limits[i][j][1]
+#         x = x//len(limits[i])
+#         y = y//len(limits[i])
+#         if x == int(i):
+#             x = x+0.5
+#             limits[str(x)] = [[x,y]]
+#         elif y == int(i):
+#             y = y+0.5
+#             limits[str(y)] = [[x,y]]
+
+limit_point = []
+for i in limits.keys():
+    limit_point.append(limits[i][0])
+
+
+#using for change the system coordonates
+img_diff = [img_xmax-img_xmin, img_ymax-img_ymin, img_xmin, img_ymin]
